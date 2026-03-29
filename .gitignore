@@ -1,0 +1,132 @@
+# =========================
+
+# General
+
+# =========================
+
+*.log
+*.tmp
+*.temp
+*.cache
+*.out
+
+# =========================
+
+# C++ / CMake
+
+# =========================
+
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+compile_commands.json
+Makefile
+
+# binaries
+
+*.exe
+*.out
+*.o
+*.obj
+*.so
+*.dll
+*.a
+
+# debug
+
+*.dSYM/
+*.stackdump
+
+# =========================
+
+# Python
+
+# =========================
+
+**pycache**/
+*.py[cod]
+
+venv/
+.venv/
+.env/
+
+dist/
+build/
+*.egg-info/
+
+# =========================
+
+# Static Analyzer specific
+
+# =========================
+
+# intermediate analysis
+
+analysis_output/
+ast_dump/
+ir/
+temp/
+
+# reports (игнорим всё кроме финальных)
+
+reports/*
+!reports/final/
+!reports/final/**
+
+# json/raw output
+
+*.json
+!reports/final/*.json
+
+# =========================
+
+# Tests artifacts
+
+# =========================
+
+coverage/
+*.gcda
+*.gcno
+
+# =========================
+
+# VSCode
+
+# =========================
+
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# =========================
+
+# OS
+
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+
+# Secrets
+
+# =========================
+
+*.key
+*.pem
+*.crt
+config.yaml
+config.json
+.env.local
+
+# =========================
+
+# Logs
+
+# =========================
+
+logs/
+*.log
