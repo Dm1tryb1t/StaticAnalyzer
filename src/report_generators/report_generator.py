@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from config.finding import Finding
+from core.finding import Finding
 from report_generators.json_report_generator import generate_report_json
 from report_generators.text_report_generator import generate_report_txt
 

@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-from config.finding import Finding
+from core.finding import Finding
 
 
 def regex_scan_for_dangerous_functions(file_path: Path, dangerous_functions: list[str]) -> list[Finding]:

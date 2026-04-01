@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from config.config_loader import load_dangerous_functions
-from config.finding import Finding
+from core.finding import Finding
 from report_generators.report_generator import write_reports
 from scanners.directory_scanner import scan_directory
 from scanners.regex_code_scanner import regex_scan_for_dangerous_functions

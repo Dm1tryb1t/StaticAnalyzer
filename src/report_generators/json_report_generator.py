@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from config.finding import Finding
+from core.finding import Finding
 
 
 def generate_report_json(findings: list[Finding], report_file: Path) -> None:
