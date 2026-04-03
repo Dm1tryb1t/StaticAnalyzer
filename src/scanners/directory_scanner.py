@@ -6,7 +6,7 @@ def scan_directory(directory: Path) -> list[Path]:
     
     for dirpath, _, files in os.walk(directory):
         for file in files:
-            if Path(file).suffix in {'.c', '.cpp'}:
+            if Path(file).suffix in {'.c', '.cpp', '.cc', '.h', '.hpp'}:
                 file_path = Path(dirpath) / file
                 file_paths.append(file_path)
 
