@@ -1,18 +1,22 @@
 import json
 from pathlib import Path
 
-from core.finding import Finding
+from core.analisis_result import Analysis_result
 
 
-def generate_report_json(findings: list[Finding], report_file: Path) -> None:
+def generate_report_json(result: Analysis_result, report_file: Path) -> None:
     report_file.parent.mkdir(parents=True, exist_ok=True)
 
     payload = {
         "summary": {
-            "total_findings": len(findings),
-            "total_files": len({finding.file_path for finding in findings}),
+            "total_files_scanned": result.scanned_files_count,
+            "potentially_dangerous_calls": len(result.findings),
+            "files_with_potentially_dangerous_calls": len(
+                {finding.file_path for finding in result.findings}
+            ),
         },
-        "findings": [finding.to_dict() for finding in findings],
+        "scanned_files": [str(file_path) for file_path in result.scanned_files],
+        "findings": [finding.to_dict() for finding in result.findings],
     }
 
     with report_file.open("w", encoding="utf-8") as report:

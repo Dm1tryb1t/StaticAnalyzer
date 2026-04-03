@@ -1,7 +1,12 @@
 import argparse
+from pathlib import Path
 
 from config.config_loader import DEFAULT_CONFIG_PATH, DEFAULT_OUTPUT_DIR
 
+def normalize_input_path(raw_path: str) -> Path:
+    # print(f"[DEBUG] raw: {raw_path}")
+    # print(f"[DEBUG] resolved: {Path(raw_path).expanduser().resolve(strict=False)}")
+    return Path(raw_path).expanduser().resolve(strict=False)
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(

@@ -1,6 +1,5 @@
 from dataclasses import asdict, dataclass
 
-
 @dataclass(slots=True)
 class Finding:
     function: str
