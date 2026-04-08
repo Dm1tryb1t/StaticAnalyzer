@@ -2,61 +2,96 @@
 
 ## Overview
 
-`StaticAnalyzer` is a small regex-based static analyzer for C/C++ source files.
-It scans `.c` and `.cpp` files, searches for calls to potentially dangerous
-functions, and generates reports in text and/or JSON format.
+`StaticAnalyzer` is a lightweight static analyzer for C and C++ projects.
+It scans source and header files, searches for calls to potentially dangerous
+functions, and generates reports in text and JSON formats.
 
-The project is intentionally simple: it does not build an AST and does not try
-to understand program semantics. The current implementation is focused on a
-clear structure and configurable regex checks.
+The project currently supports two scanning modes:
 
-## How It Works
+- AST-based analysis through `clang.cindex`
+- regex-based analysis as a simpler fallback
 
-1. `src/main.py` acts as a thin entry point.
-2. Arguments are parsed in `src/args_parser.py`.
-3. Dangerous function names are loaded from `src/config/dangerous_functions.txt`.
-4. The analyzer scans the target directory for `.c` and `.cpp` files.
-5. Each file is checked with regex patterns.
-6. Findings are written to text and/or JSON reports.
+At the moment, AST scanning is the default mode. Regex scanning can be enabled
+explicitly through the CLI.
+
+## Supported Files
+
+The analyzer scans files with these extensions:
+
+- `.c`
+- `.cpp`
+- `.cc`
+- `.h`
+- `.hpp`
 
 ## Detected Functions
 
-By default, the analyzer checks the functions listed in
-`src/config/dangerous_functions.txt`:
+The list of dangerous functions is loaded from
+`src/config/dangerous_functions.txt`.
+
+By default, the config contains:
 
 - `strcpy`
 - `gets`
 - `sprintf`
 - `system`
 
-You can extend or replace this list with your own config file.
+You can replace this list with your own config file through `--config`.
 
-## Output
-
-Reports are written to the `reports` directory by default:
-
-- `reports/dangerous_functions_report.txt`
-- `reports/dangerous_functions_report.json`
-
-### Text Report Format
-
-Each line has the following structure:
+## Project Structure
 
 ```text
-path/to/file:line_number -> line_content
+src/
+|- main.py
+|- analysis_runner.py
+|- args_parser.py
+|- config/
+|  |- config_loader.py
+|  `- dangerous_functions.txt
+|- core/
+|  |- analisis_result.py
+|  `- finding.py
+|- report_generators/
+|  |- report_generator.py
+|  |- text_report_generator.py
+|  `- json_report_generator.py
+`- scanners/
+   |- ast_code_scanner.py
+   |- directory_scanner.py
+   `- regex_code_scanner.py
 ```
 
-### JSON Report Format
+## How It Works
 
-The JSON report contains:
+1. `src/main.py` parses CLI arguments and normalizes paths.
+2. `src/analysis_runner.py` creates `Analysis_result`.
+3. The analyzer loads dangerous function names from config.
+4. `src/scanners/directory_scanner.py` collects supported source files.
+5. Each file is scanned either:
+   - through AST in `src/scanners/ast_code_scanner.py`, or
+   - through regex in `src/scanners/regex_code_scanner.py`
+6. Findings and scanned files are accumulated inside `Analysis_result`.
+7. Reports are generated into the output directory.
 
-- `summary.total_findings`
-- `summary.total_files`
-- `findings` array with:
-  - `function`
-  - `file_path`
-  - `line_number`
-  - `line_content`
+## Installation
+
+Install Python dependencies:
+
+```sh
+pip install -r requirments.txt
+```
+
+For AST scanning, Python package `clang` is not enough by itself. You also need
+an installed LLVM/Clang distribution with `libclang`.
+
+On Windows with MSYS2 UCRT64, a typical setup is:
+
+```sh
+pacman -S mingw-w64-ucrt-x86_64-python mingw-w64-ucrt-x86_64-clang
+```
+
+If `clang.cindex` cannot find `libclang`, configure the path in code with
+`clang.cindex.Config.set_library_file(...)`.
 
 ## Usage
 
@@ -70,6 +105,12 @@ Scan a specific directory:
 
 ```sh
 python src/main.py path/to/project
+```
+
+Use regex scanning instead of AST scanning:
+
+```sh
+python src/main.py path/to/project --regex
 ```
 
 Generate only a text report:
@@ -96,47 +137,60 @@ Write reports to a custom directory:
 python src/main.py path/to/project --output-dir path/to/reports
 ```
 
-Show CLI help:
+Show help:
 
 ```sh
 python src/main.py --help
 ```
 
-## Project Structure
+## Output
+
+By default, reports are written to `reports/`:
+
+- `reports/dangerous_functions_report.txt`
+- `reports/dangerous_functions_report.json`
+
+### Text Report
+
+Each line has this format:
 
 ```text
-src/
-├── main.py
-├── analysis_runner.py
-├── args_parser.py
-├── config/
-│   ├── config_loader.py
-│   └── dangerous_functions.txt
-├── core/
-│   └── finding.py
-├── report_generators/
-│   ├── report_generator.py
-│   ├── text_report_generator.py
-│   └── json_report_generator.py
-└── scanners/
-    ├── directory_scanner.py
-    └── regex_code_scanner.py
+path/to/file:line_number -> line_content
 ```
 
-## Limitations
+### JSON Report
 
-- The analyzer uses regex only.
-- It does not distinguish between code, comments, and string literals.
-- It may produce false positives.
-- It does not analyze control flow or data flow.
-- It currently scans only `.c` and `.cpp` files.
+The JSON report contains:
+
+- `summary.total_files_scanned`
+- `summary.potentially_dangerous_calls`
+- `summary.files_with_potentially_dangerous_calls`
+- `scanned_files`
+- `findings`
+
+Each finding contains:
+
+- `function`
+- `file_path`
+- `line_number`
+- `line_content`
+
+## Current Limitations
+
+- AST scanning depends on a working local `libclang` installation.
+- The current AST parser setup uses a simple generic C++ configuration.
+- Regex mode may produce false positives in comments and string literals.
+- The analyzer does not perform control-flow or data-flow analysis.
+- The analyzer only checks direct function-name matches from the config.
+- The project still contains naming inconsistencies such as `Analysis_result` and `analisis_result.py`.
 
 ## Future Improvements
 
-- Ignore matches inside comments and string literals.
-- Add severity or category metadata for findings.
-- Support more dangerous functions and pattern groups.
-- Add filtering by file extension and ignore paths.
-- Add unit tests for CLI, scanning, and report generation.
-- Improve path/package consistency across the project.
-- Add optional AST-based analysis for more accurate checks.
+- Add automatic fallback from AST mode to regex mode when `libclang` is unavailable.
+- Improve AST parsing for mixed C and C++ projects.
+- Distinguish function categories or severity levels in findings.
+- Add filtering by path, extension, and ignored directories.
+- Add deduplication rules for repeated findings.
+- Add tests for CLI parsing, directory scanning, AST scanning, regex scanning, and report generation.
+- Normalize naming across the project, including `AnalysisResult` and `analysis_result.py`.
+- Add CI checks for linting, test execution, and sample report validation.
