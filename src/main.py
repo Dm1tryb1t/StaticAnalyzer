@@ -10,8 +10,9 @@ def main(argv: list[str] | None = None) -> int:
     directory = normalize_input_path(args.directory)
     config_path = normalize_input_path(args.config)
     output_dir = normalize_input_path(args.output_dir)
+    regex_enabled = args.regex
 
-    result = run_analysis(directory, config_path, output_dir, args.format)
+    result = run_analysis(directory, config_path, output_dir, args.format, regex_enabled)
     print_analysis_summary(result)
     return 0
 

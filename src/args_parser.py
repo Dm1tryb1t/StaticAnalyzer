@@ -34,4 +34,9 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         default="both",
         help="Report format to generate.",
     )
+    parser.add_argument(
+        "--regex",
+        action="store_true",
+        help="Enable regex-based scanning.",
+    )
     return parser.parse_args(argv)
