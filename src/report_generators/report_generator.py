@@ -1,10 +1,11 @@
 from pathlib import Path
 
-from core.analisis_result import Analysis_result
+from core.analysis_result import AnalysisResult
 from report_generators.json_report_generator import generate_report_json
 from report_generators.text_report_generator import generate_report_txt
 
-def write_reports(result: Analysis_result, output_format: str) -> None:
+
+def write_reports(result: AnalysisResult, output_format: str) -> None:
     result.findings.sort(key=lambda f: (f.file_path, f.line_number))
 
     if output_format in {"text", "both"}:

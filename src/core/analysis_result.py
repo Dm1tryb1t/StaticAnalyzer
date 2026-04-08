@@ -5,7 +5,7 @@ from core.finding import Finding
 
 
 @dataclass(slots=True)
-class Analysis_result:
+class AnalysisResult:
     directory: Path
     output_dir: Path
     scanned_files: list[Path]

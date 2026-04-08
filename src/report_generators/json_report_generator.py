@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
 
-from core.analisis_result import Analysis_result
+from core.analysis_result import AnalysisResult
 
 
-def generate_report_json(result: Analysis_result, report_file: Path) -> None:
+def generate_report_json(result: AnalysisResult, report_file: Path) -> None:
     report_file.parent.mkdir(parents=True, exist_ok=True)
 
     payload = {

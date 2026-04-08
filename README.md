@@ -49,7 +49,7 @@ src/
 |  |- config_loader.py
 |  `- dangerous_functions.txt
 |- core/
-|  |- analisis_result.py
+|  |- analysis_result.py
 |  `- finding.py
 |- report_generators/
 |  |- report_generator.py
@@ -64,13 +64,13 @@ src/
 ## How It Works
 
 1. `src/main.py` parses CLI arguments and normalizes paths.
-2. `src/analysis_runner.py` creates `Analysis_result`.
+2. `src/analysis_runner.py` creates `AnalysisResult`.
 3. The analyzer loads dangerous function names from config.
 4. `src/scanners/directory_scanner.py` collects supported source files.
 5. Each file is scanned either:
    - through AST in `src/scanners/ast_code_scanner.py`, or
    - through regex in `src/scanners/regex_code_scanner.py`
-6. Findings and scanned files are accumulated inside `Analysis_result`.
+6. Findings and scanned files are accumulated inside `AnalysisResult`.
 7. Reports are generated into the output directory.
 
 ## Installation
@@ -78,7 +78,7 @@ src/
 Install Python dependencies:
 
 ```sh
-pip install -r requirments.txt
+pip install -r requirements.txt
 ```
 
 For AST scanning, Python package `clang` is not enough by itself. You also need
@@ -182,7 +182,7 @@ Each finding contains:
 - Regex mode may produce false positives in comments and string literals.
 - The analyzer does not perform control-flow or data-flow analysis.
 - The analyzer only checks direct function-name matches from the config.
-- The project still contains naming inconsistencies such as `Analysis_result` and `analisis_result.py`.
+- The project still has a few rough edges unrelated to naming, such as basic AST configuration and missing automated tests.
 
 ## Future Improvements
 
@@ -192,5 +192,4 @@ Each finding contains:
 - Add filtering by path, extension, and ignored directories.
 - Add deduplication rules for repeated findings.
 - Add tests for CLI parsing, directory scanning, AST scanning, regex scanning, and report generation.
-- Normalize naming across the project, including `AnalysisResult` and `analysis_result.py`.
 - Add CI checks for linting, test execution, and sample report validation.
